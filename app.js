@@ -4,61 +4,41 @@ const state = {
     nextId: 1,
     editingId: null,
     searchQuery: "",
-    sortBy: ""
+    sortField: "",
+    sortDirection: "asc",
+    loading: false
 };
 
 //зберігання в пам'яті
-function saveToStorage(){
+function saveToStorage() {
     localStorage.setItem("tickets", JSON.stringify(state.tickets));
 }
 
-function loadFromStorage(){
+function loadFromStorage() {
     const data = localStorage.getItem("tickets");
 
-    if(data){
+    if (data) {
         state.tickets = JSON.parse(data);
+        
+        if (state.tickets.length) {
+            state.nextId =
+                Math.max(...state.tickets.map(t => t.id)) + 1;
+        }
     }
 }
-
-//юзери
-const usersList = [
-    {id:1, name:"Ivan Petrenko"},
-    {id:2, name:"Olena Koval"},
-    {id:3, name:"Pavlo Melnyk"}
-];
-
-//статуси
-const statuses = [
-    {id:1, name:"Open"},
-    {id:2, name:"In Progress"},
-    {id:3, name:"Closed"}
-];
 
 //DOM-elements
 const form = document.getElementById("ticketForm");
 const table = document.getElementById("ticketTable");
-const statusSelect = document.getElementById("status");
-const authorSelect = document.getElementById("author");
+const loading = document.getElementById("loading");
 
-//select
-function loadLookups(){
-
-    statuses.forEach(s=>{
-        const opt = document.createElement("option");
-        opt.value = s.id;
-        opt.textContent = s.name;
-        statusSelect.appendChild(opt);
-    });
-
-    usersList.forEach(u=>{
-        const opt = document.createElement("option");
-        opt.value = u.id;
-        opt.textContent = u.name;
-        authorSelect.appendChild(opt);
-    });
+function setLoading(value) {
+    state.loading = value;
+    loading.style.display = value ? "block" : "none";
 }
 
-function readForm(){
+
+function readForm() {
     return {
         subject: document.getElementById("subject").value.trim(),
         status: document.getElementById("status").value,
@@ -69,151 +49,191 @@ function readForm(){
 }
 
 //валідація
-function validate(data){
+function validate(data) {
 
     let valid = true;
     clearErrors();
 
-    if(data.subject.length < 4){
-        setError("subject","Minimum 4 symbols");
-        valid=false;
-    }
-    
-    if(!data.status){
-        setError("status","Choose status");
-        valid=false;
+    if (data.subject.length < 4) {
+        setError("subject", "Minimum 4 symbols");
+        valid = false;
     }
 
-    if(!data.priority){
-        setError("priority","Choose priority");
-        valid=false;
+    if (!data.status) {
+        setError("status", "Choose status");
+        valid = false;
+    }
+
+    if (!data.priority) {
+        setError("priority", "Choose priority");
+        valid = false;
     }
 
 
-    if(data.message.length < 8){
-        setError("message","Too short");
-        valid=false;
+    if (data.message.length < 8) {
+        setError("message", "Too short");
+        valid = false;
     }
 
-    if(!data.author){
-        setError("author","Choose name");
-        valid=false;
+    if (!data.author) {
+        setError("author", "Choose name");
+        valid = false;
     }
 
     return valid;
 }
 
-function setError(field, message){
+function setError(field, message) {
     const input = document.getElementById(field);
     input.classList.add("invalid");
-    document.getElementById(field+"Error").textContent = message;
+    document.getElementById(field + "Error").textContent = message;
 }
 
-function clearErrors(){
+function clearErrors() {
     document.querySelectorAll(".invalid")
-        .forEach(el=>el.classList.remove("invalid"));
+        .forEach(el => el.classList.remove("invalid"));
 
     document.querySelectorAll(".error-text")
-        .forEach(el=>el.textContent="");
+        .forEach(el => el.textContent = "");
+}
+
+// перевірка на дублікат
+function isDuplicate(subject) {
+
+    return state.tickets.some(ticket =>
+        ticket.subject.toLowerCase() === subject.toLowerCase()
+    );
 }
 
 //add item
-function addItem(data){
+function addItem(data) {
+
+    if (isDuplicate(data.subject)) {
+        setError("subject", "Ticket already exists");
+        return false;
+    }
 
     const ticket = {
         id: state.nextId++,
         subject: data.subject,
-        statusId: Number(data.status),
+        status: data.status,
         priority: data.priority,
         message: data.message,
-        authorId: Number(data.author)
+        author: data.author
     };
 
     state.tickets.push(ticket);
     saveToStorage();
+
+    return true;
 }
 
-function editItem(id){
+function editItem(id) {
 
     clearErrors();
     const ticket = state.tickets.find(t => t.id === id);
-    if(!ticket) return;
+    if (!ticket) return;
 
     document.getElementById("subject").value = ticket.subject;
-    document.getElementById("status").value = String(ticket.statusId);
     document.getElementById("priority").value = ticket.priority;
     document.getElementById("message").value = ticket.message;
-    document.getElementById("author").value = String(ticket.authorId);
+    document.getElementById("status").value = ticket.status;
+    document.getElementById("author").value = ticket.author;
 
     state.editingId = id;
 
     form.querySelector("button[type='submit']").textContent = "Save";
 }
 
-function updateItem(data){
+function updateItem(data) {
     const index = state.tickets.findIndex(t => t.id === state.editingId);
-    if(index === -1) return;
+    if (index === -1) return;
 
     state.tickets[index] = {
         id: state.editingId,
         subject: data.subject,
-        statusId: Number(data.status),
+        status: data.status,
         priority: data.priority,
         message: data.message,
-        authorId: Number(data.author)
+        author: data.author
     };
     saveToStorage();
 }
 
-function deleteItem(id){
+function deleteItem(id) {
     state.tickets = state.tickets.filter(t => t.id !== id);
+
+    if (state.editingId === id) {
+        state.editingId = null;
+        form.reset();
+        clearErrors();
+    }
+
     saveToStorage();
 }
 
 //render (інтерфейс)
-function renderTickets(){
+function renderTickets() {
 
-    table.innerHTML="";
+    table.innerHTML = "";
 
     let ticketsToShow = [...state.tickets];
 
     //пошук
-    if(state.searchQuery && state.searchQuery.trim() !== ""){
-        ticketsToShow = ticketsToShow.filter(ticket =>
-            ticket.subject
-                .toLowerCase()
-                .includes(state.searchQuery.toLowerCase())
-        );
+    if (state.searchQuery) {
+        ticketsToShow =
+            ticketsToShow.filter(t =>
+                t.subject
+                    .toLowerCase()
+                    .includes(state.searchQuery.toLowerCase())
+            );
     }
 
-    //сортування
-    if(state.sortBy === "priority"){
-        const order = {Low:3, Medium:2, High:1};
 
-        ticketsToShow.sort((a,b)=>
-            order[a.priority] - order[b.priority]
-        );
+    if (state.sortField) {
+        ticketsToShow.sort((a, b) => {
+            let valueA = a[state.sortField];
+            let valueB = b[state.sortField];
+
+            if (typeof valueA == "string") {
+                valueA = valueA.toLowerCase()
+                valueB = valueB.toLowerCase()
+
+
+                if (valueA > valueB) return state.sortDirection == "asc" ? 1 : -1;
+                if (valueA < valueB) return state.sortDirection == "asc" ? -1 : 1;
+
+                return 0;
+            }
+            if (typeof valueA == "number"){
+                if (valueA > valueB) return state.sortDirection == "asc" ? 1 : -1;
+                if (valueA < valueB) return state.sortDirection == "asc" ? -1 : 1;
+
+                return 0;
+            }
+                
+    });
     }
 
-    ticketsToShow.forEach(ticket=>{
 
-        const statusName = statuses.find(s=>s.id===ticket.statusId)?.name;
-        const userName = usersList.find(u=>u.id===ticket.authorId)?.name;
+    ticketsToShow.forEach(ticket => {
+
         const row = document.createElement("tr");
 
         row.innerHTML = `
         <td>${ticket.id}</td>
         <td>${ticket.subject}</td>
-        <td>${statusName}</td>
+        <td>${ticket.status}</td>
         <td>${ticket.priority}</td>
-        <td>${userName}</td>
+        <td>${ticket.author}</td>
         <td>${ticket.message}</td>
         <td>
-            <button type="button" class="edit-btn" data-id="${ticket.id}">
-               Edit
+            <button class="edit-btn" data-id="${ticket.id}">
+            Edit
             </button>
-            <button type="button" class="delete-btn" data-id="${ticket.id}">
-               Delete
+
+            <button class="delete-btn" data-id="${ticket.id}">
+            Delete
             </button>
         </td>
         `;
@@ -223,64 +243,93 @@ function renderTickets(){
 }
 
 //handlers (реакція на подію)
-form.addEventListener("submit",function(e){
+form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const formData = readForm();
-    if(!validate(formData)) return;
+    if (!validate(formData)) return;
 
-    if(state.editingId !== null){
-        updateItem(formData);
-    }
-    else{
-        addItem(formData);
-    }
-    saveToStorage();
-    renderTickets();
-    form.reset();
-    clearErrors();
-    state.editingId = null;
-    form.querySelector("button[type='submit']").textContent = "Add";
+    setLoading(true);
+
+    setTimeout(() => {
+
+        if (state.editingId !== null) {
+            updateItem(formData);
+        }
+        else {
+            if (!addItem(formData)) {
+                setLoading(false);
+                return;
+            }
+        }
+        state.editingId = null;
+        form.reset();
+        clearErrors();
+        setLoading(false);
+        renderTickets();
+
+    }, 500);
 });
 
-    table.addEventListener("click",function(e){
-    if(e.target.classList.contains("delete-btn")){
+table.addEventListener("click", e => {
+
+    if (e.target.classList.contains("delete-btn")) {
         const id = Number(e.target.dataset.id);
         deleteItem(id);
+        form.querySelector("button[type='submit']").textContent = "add";
         renderTickets();
     }
 
-    if(e.target.classList.contains("edit-btn")){
+    if (e.target.classList.contains("edit-btn")) {
         const id = Number(e.target.dataset.id);
-        editItem(id);
+        const ticket =
+            state.tickets.find(t => t.id === id);
+
+        if (!ticket) return;
+
+        document.getElementById("subject").value = ticket.subject;
+        document.getElementById("status").value = ticket.status;
+        document.getElementById("priority").value = ticket.priority;
+        document.getElementById("message").value = ticket.message;
+        document.getElementById("author").value = ticket.author;
+
+        state.editingId = id;
     }
 });
 
 //помилки вводу
 document.querySelectorAll("input, textarea, select")
-.forEach(el=>{
-    el.addEventListener("input",()=>{
-        el.classList.remove("invalid");
-        const error = document.getElementById(el.id+"Error");
-        if(error) error.textContent="";
+    .forEach(el => {
+        el.addEventListener("input", () => {
+            el.classList.remove("invalid");
+            const error = document.getElementById(el.id + "Error");
+            if (error) error.textContent = "";
+        });
     });
-});
 
 //пошук
 document.getElementById("searchInput")
-.addEventListener("input", e=>{
-    state.searchQuery = e.target.value;
-    renderTickets();
-});
+    .addEventListener("input", e => {
+        state.searchQuery = e.target.value;
+        renderTickets();
+    });
+
 
 //сортування
-document.getElementById("sortSelect")
-.addEventListener("change", e=>{
-    state.sortBy = e.target.value;
-    renderTickets();
+document.querySelectorAll("th[data-field]").forEach(th =>{
+th.addEventListener("click", e => {
+    const field = th.dataset.field;
+    if(state.sortField == field){
+        state.sortDirection = state.sortDirection == "asc" ? "desc" : "asc";
+    }
+    else {
+        state.sortField = field;
+        state.sortDirection = "asc";
+    }
+        renderTickets();
+    });
 });
 
 //start
-loadLookups();
 loadFromStorage();
 renderTickets();

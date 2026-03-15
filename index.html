@@ -34,7 +34,10 @@
 <div class="form-group">
 <label for="status">Status</label>
 <select id="status">
-    <option value="">select</option>
+<option value="">select</option>
+<option value="Open">Open</option>
+<option value="In Progress">In Progress</option>
+<option value="Closed">Closed</option>
 </select>
 <div class="error-text" id="statusError"></div>
 </div>
@@ -59,7 +62,10 @@
 <div class="form-group">
 <label for="author">User</label>
 <select id="author">
-    <option value="">select</option>
+<option value="">select</option>
+<option value="Ivan Petrenko">Ivan Petrenko</option>
+<option value="Olena Koval">Olena Koval</option>
+<option value="Pavlo Melnyk">Pavlo Melnyk</option>
 </select>
 <div class="error-text" id="authorError"></div>
 </div>
@@ -69,6 +75,9 @@
 <div id="error" class="error"></div>
 
 </form>
+<div id="loading" style="display:none">
+Loading...
+</div>
 </div>
 
 <div class="list-panel">
@@ -77,12 +86,12 @@
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Subject</th>
-<th>Status</th>
-<th>Priority</th>
-<th>Author</th>
-<th>Message</th>
+<th data-field="id">ID</th>
+<th data-field="subject">Subject</th>
+<th data-field="status">Status</th>
+<th data-field="priority">Priority</th>
+<th data-field="author">Author</th>
+<th data-field="message">Message</th>
 <th>Actions</th>
 </tr>
 </thead>
