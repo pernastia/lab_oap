@@ -1,10 +1,10 @@
 export function validateCreateTicket(dto: any) {
   const errors = [];
 
-  if (typeof dto.title !== "string" || dto.title.trim().length < 3) {
+  if (typeof dto.subject !== "string" || dto.subject.trim().length < 3) {
     errors.push({
       field: "subject",
-      message: "Title must be at least 3 characters",
+      message: "Subject must be at least 3 characters",
     });
   }
 
