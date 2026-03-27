@@ -1,6 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
 import * as repo from "../repositories/users.repository.js";
-import { validateCreateUser } from "../validators/users.validator.js";
 
 export function getUsers(req: Request, res: Response) {
   const users = repo.getAllUsers();
@@ -23,18 +22,7 @@ export function getUser(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(user);
 }
 
-export function createUser(req: Request, res: Response, next: NextFunction) {
-  const errors = validateCreateUser(req.body);
-
-  if (errors.length > 0) {
-    return next({
-      status: 400,
-      code: "VALIDATION_ERROR",
-      message: "Invalid request body",
-      details: errors,
-    });
-  }
-
+export function createUser(req: Request, res: Response) {
   const { name } = req.body;
 
   const user = repo.createUser(name);

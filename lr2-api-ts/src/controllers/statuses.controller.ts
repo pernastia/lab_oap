@@ -1,6 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
 import * as service from "../services/statuses.service.js";
-import { validateCreateStatus } from "../validators/statuses.validator.js";
 import { ApiError } from "../errors.js";
 
 export const getAll = (req: Request, res: Response) => {
@@ -13,18 +12,7 @@ export const getById = (req: Request, res: Response, next: NextFunction) => {
   res.json(item);
 };
 
-export const create = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validateCreateStatus(req.body);
-
-  if (errors.length > 0) {
-    return next({
-      status: 400,
-      code: "VALIDATION_ERROR",
-      message: "Invalid request",
-      details: errors,
-    });
-  }
-
+export const create = (req: Request, res: Response) => {
   const item = service.createStatus(req.body);
   res.status(201).json(item);
 };
