@@ -6,3 +6,5 @@ build/
 *.js.map
 *.d.ts.map
 .env
+*.db
+*.db-journal
