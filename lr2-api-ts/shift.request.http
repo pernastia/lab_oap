@@ -1,0 +1,13 @@
+### get all users
+GET http://localhost:3000/api/users
+
+### post user
+POST http://localhost:3000/api/users/
+Content-Type: application/json
+
+{
+  "name": "John"
+}
+
+### get user by id
+GET http://localhost:3000/api/users/20

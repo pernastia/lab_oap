@@ -8,13 +8,13 @@ export async function getUserById(id: number) {
   return get(`SELECT * FROM Users WHERE id = ${id}`);
 }
 
-export async function createUser(name: string) {
-  const result = await run(`INSERT INTO Users(name) VALUES('${name}')`);
+export async function createUser(dto: { name: string }) {
+  const result = await run(`INSERT INTO Users(name) VALUES('${dto.name}')`);
   return getUserById(result.lastID);
 }
 
-export async function updateUser(id: number, name: string) {
-  await run(`UPDATE Users SET name = ? WHERE id = ?`, [name, id]);
+export async function updateUser(id: number, dto: { name: string }) {
+  await run(`UPDATE Users SET name = '${dto.name}' WHERE id = ${id}`);
   return getUserById(id);
 }
 

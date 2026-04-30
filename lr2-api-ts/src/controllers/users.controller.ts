@@ -1,64 +1,95 @@
 import { type Request, type Response, type NextFunction } from "express";
-import * as repo from "../repositories/users.repository.js";
+import * as service from "../services/users.service.js";
+import { ApiError } from "../errors.js";
 
-export function getUsers(req: Request, res: Response) {
-  const users = repo.getAllUsers();
-  res.status(200).json(users);
-}
+export async function getUsers(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const users = await service.getAllUsers();
 
-export function getUser(req: Request, res: Response, next: NextFunction) {
-  const id = Number(req.params.id);
-
-  const user = repo.getUserById(id);
-
-  if (!user) {
-    return next({
-      status: 404,
-      code: "NOT_FOUND",
-      message: "User not found",
+    res.status(200).json({
+      data: users,
     });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json(user);
 }
 
-export function createUser(req: Request, res: Response) {
-  const { name } = req.body;
+export async function getUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Number(req.params.id);
 
-  const user = repo.createUser(name);
+    const user = await service.getUserById(id);
 
-  res.status(201).json(user);
-}
+    if (!user) {
+      throw new ApiError(404, "NOT_FOUND", "User not found");
+    }
 
-export function updateUser(req: Request, res: Response, next: NextFunction) {
-  const id = Number(req.params.id);
-  const { name } = req.body;
-
-  const user = repo.updateUser(id, name);
-
-  if (!user) {
-    return next({
-      status: 404,
-      code: "NOT_FOUND",
-      message: "User not found",
+    res.status(200).json({
+      data: user,
     });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json(user);
 }
 
-export function deleteUser(req: Request, res: Response, next: NextFunction) {
-  const id = Number(req.params.id);
+export async function createUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const user = await service.createUser(req.body);
 
-  const deleted = repo.deleteUser(id);
-
-  if (!deleted) {
-    return next({
-      status: 404,
-      code: "NOT_FOUND",
-      message: "User not found",
+    res.status(201).json({
+      data: user,
     });
+  } catch (error) {
+    next(error);
   }
+}
 
-  res.status(204).send();
+export async function updateUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const id = Number(req.params.id);
+
+    const user = await service.updateUser(id, req.body);
+
+    if (!user) {
+      throw new ApiError(404, "NOT_FOUND", "User not found");
+    }
+
+    res.status(200).json({
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const id = Number(req.params.id);
+
+    const deleted = await service.deleteUser(id);
+
+    if (!deleted) {
+      throw new ApiError(404, "NOT_FOUND", "User not found");
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }

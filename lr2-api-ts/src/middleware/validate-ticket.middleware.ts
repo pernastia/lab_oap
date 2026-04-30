@@ -1,11 +1,6 @@
-import { type Request, type Response, type NextFunction } from "express";
-import { ApiError } from "../errors.js";
+import { type Request } from "express";
 
-export default function validateTicket(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export default function validateTicket(req: Request) {
   const { subject, author } = req.body;
 
   const errors = [];
@@ -20,12 +15,5 @@ export default function validateTicket(
   if (!author || typeof author !== "string") {
     errors.push({ field: "author", message: "Author is required" });
   }
-
-  if (errors.length > 0) {
-    return next(
-      new ApiError(400, "VALIDATION_ERROR", "Invalid request body", errors),
-    );
-  }
-
-  next();
+  return errors;
 }
