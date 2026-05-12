@@ -69,29 +69,35 @@ export async function deleteTicket(id: number) {
 }
 
 export async function getTop3TicketsWithTopUser() {
-  const sql = `
-    SELECT
-      t.id AS ticketId,
-      t.subject,
-      u.name AS topUser,
-      sub.messagesCount
+  const top3Tickets = await all(`
+   SELECT t.id AS ticketId, t.subject, COUNT(tm.id) AS messagesCount
     FROM tickets t
-    JOIN (
-      SELECT
-        ticketId,
-        userId,
-        COUNT(id) AS messagesCount,
-        ROW_NUMBER() OVER (
-          PARTITION BY ticketId
-          ORDER BY COUNT(id) DESC
-        ) AS rn
-      FROM ticket_messages
-      GROUP BY ticketId, userId
-    ) sub ON sub.ticketId = t.id AND sub.rn = 1
-    JOIN users u ON u.id = sub.userId
-    ORDER BY sub.messagesCount DESC
+    JOIN ticket_messages tm ON tm.ticketId = t.id
+    GROUP BY t.id, t.subject
+    ORDER BY messagesCount DESC
     LIMIT 3
-  `;
+  `);
 
-  return await all(sql);
+  const result = [];
+
+  for (const ticket of top3Tickets) {
+    const topUser = await get(`
+      SELECT u.name, COUNT(tm.id) AS userMessagesCount
+      FROM ticket_messages tm
+      JOIN users u ON u.id = tm.userId
+      WHERE tm.ticketId = ${ticket.ticketId}
+      GROUP BY tm.userId, u.name
+      ORDER BY userMessagesCount DESC
+      LIMIT 1
+    `);
+
+    result.push({
+      ticketId: ticket.ticketId,
+      subject: ticket.subject,
+      messagesCount: ticket.messagesCount,
+      topUser: topUser ? topUser.name : null,
+    });
+  }
+
+  return result;
 }
