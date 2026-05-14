@@ -1,6 +1,15 @@
 import { all, get, run } from "../db/dbClient.js";
+import {
+  type CreateTicketRequestDTO,
+  type UpdateTicketRequestDTO,
+} from "../dtos/tickets.dto.js";
 
-export async function getAllTickets(query: any) {
+export async function getAllTickets(query: {
+  statusId?: number;
+  userId?: number;
+  sort?: string;
+  order?: string;
+}) {
   let sql = `
     SELECT 
       t.*,
@@ -44,7 +53,7 @@ export async function getTicketById(id: number) {
   return await get(sql);
 }
 
-export async function createTicket(data: any) {
+export async function createTicket(data: CreateTicketRequestDTO) {
   const result = await run(`
     INSERT INTO tickets(subject, message, priority, authorId, statusId)
     VALUES('${data.subject}','${data.message}','${data.priority}',${data.authorId},${data.statusId})
@@ -53,7 +62,7 @@ export async function createTicket(data: any) {
   return await getTicketById(result.lastID);
 }
 
-export async function updateTicket(id: number, data: any) {
+export async function updateTicket(id: number, data: UpdateTicketRequestDTO) {
   await run(`
     UPDATE tickets
     SET subject='${data.subject}', message='${data.message}'

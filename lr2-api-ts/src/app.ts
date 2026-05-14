@@ -1,21 +1,20 @@
 import express from "express";
-
-import usersRoutes from "./routes/users.routes.js";
+import cors from "cors";
 import ticketsRoutes from "./routes/tickets.routes.js";
-import statusesRoutes from "./routes/statuses.routes.js";
-import messagesRoutes from "./routes/ticketMessages.routes.js";
+import errorHandler from "./middleware/error-handler.middleware.js";
 
 const app = express();
 
 app.use(express.json());
 
-app.use("/api/users", usersRoutes);
-app.use("/api/tickets", ticketsRoutes);
-app.use("/api/statuses", statusesRoutes);
-app.use("/api/messages", messagesRoutes);
+app.use(
+  cors({
+    origin: "http://localhost:5500",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
 
-app.get("/health", (req, res) => {
-  res.json({ ok: true });
-});
-
+app.use("/api/v1/tickets", ticketsRoutes);
+app.use(errorHandler);
 export default app;

@@ -1,14 +1,47 @@
 # Lab
 
-## Backend:
+## Run backend
 
-Install dependencies:
-npm install
-
-Run dev server:
 npm run dev
 
-Server:
+Backend URL:
+http://localhost:3000
+
+## Run frontend
+
+npx http-server -p 5500
+
+Frontend URL:
+http://localhost:5500
+
+## API
+
+GET /api/v1/tickets
+GET /api/v1/tickets/1
+POST /api/v1/tickets
+DELETE /api/v1/tickets/1
+
+## Validation example
+
+POST /api/v1/tickets
+
+Wrong body:
+{
+  "subject": "a"
+}
+
+Response:
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Subject must contain at least 3 characters"
+}
+
+## CORS
+
+Frontend origin:
+http://localhost:5500
+
+Backend origin:
 http://localhost:3000
 
 ## Endpoints
@@ -68,11 +101,6 @@ curl "http://localhost:3000/api/tickets?sortDir=desc"
 
 Combined:
 curl "http://localhost:3000/api/tickets?author=ivan&page=1&pageSize=2&sortDir=desc"
-
-## Frontend:
-
-1.Download or clone the repository
-2.Open the "index.html" file in any browser
 
 ## SQL Injection demo
 ./data/app.db

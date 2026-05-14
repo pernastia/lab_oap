@@ -1,6 +1,15 @@
 import * as repo from "../repositories/tickets.repository.js";
+import {
+  type CreateTicketRequestDTO,
+  type UpdateTicketRequestDTO,
+} from "../dtos/tickets.dto.js";
 
-export const getAllTickets = async (query: any) => {
+export const getAllTickets = async (query: {
+  statusId?: number;
+  userId?: number;
+  sort?: string;
+  order?: string;
+}) => {
   return await repo.getAllTickets(query);
 };
 
@@ -8,11 +17,14 @@ export const getTicket = async (id: number) => {
   return await repo.getTicketById(id);
 };
 
-export const createTicket = async (data: any) => {
+export const createTicket = async (data: CreateTicketRequestDTO) => {
   return await repo.createTicket(data);
 };
 
-export const updateTicket = async (id: number, data: any) => {
+export const updateTicket = async (
+  id: number,
+  data: UpdateTicketRequestDTO,
+) => {
   return await repo.updateTicket(id, data);
 };
 

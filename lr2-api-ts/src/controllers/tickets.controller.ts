@@ -1,6 +1,10 @@
 import { type Request, type Response, type NextFunction } from "express";
 import * as service from "../services/tickets.service.js";
 import { ApiError } from "../errors.js";
+import {
+  type CreateTicketRequestDTO,
+  type UpdateTicketRequestDTO,
+} from "../dtos/tickets.dto.js";
 
 export async function getAllTickets(
   req: Request,
@@ -49,7 +53,8 @@ export async function createTicket(
   next: NextFunction,
 ) {
   try {
-    const ticket = await service.createTicket(req.body);
+    const dto: CreateTicketRequestDTO = req.body;
+    const ticket = await service.createTicket(dto);
 
     res.status(201).json({
       data: ticket,
@@ -65,7 +70,8 @@ export async function updateTicket(
   next: NextFunction,
 ) {
   try {
-    const ticket = await service.updateTicket(Number(req.params.id), req.body);
+    const dto: UpdateTicketRequestDTO = req.body;
+    const ticket = await service.updateTicket(Number(req.params.id), dto);
 
     if (!ticket) {
       throw new ApiError(404, "NOT_FOUND", "Ticket not found");
