@@ -1,119 +1,158 @@
-*{
-box-sizing:border-box;
-font-family:Arial, sans-serif;
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-body{
-margin:0;
-background:#d5e2f0;
+body {
+    margin: 0;
+    background: #d5e2f0;
 }
 
-h1{
+h1 {
     padding: 15px 0px 0px 10px;
-    color:#4e5e86
+    color: #4e5e86;
 }
 
-.controls{
+.controls {
     padding: 10px;
 }
 
-header{
-background:#0f172a;
-color:white;
-padding:20px;
-text-align:center;
-font-size:24px;
+header {
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
 }
 
-.container{
-display:flex;
-gap:20px;
-padding:5px 20px 20px;
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 5px 20px 20px;
 }
 
-.form-panel{
-width:35%;
-background:white;
-padding:20px;
-border-radius:20px;
+.form-panel {
+    width: 35%;
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
 }
 
-.list-panel{
-width:65%;
-background:white;
-padding:20px;
-border-radius:20px;
+.list-panel {
+    width: 65%;
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
 }
 
-.form-group{
-margin-bottom:15px;
+.form-group {
+    margin-bottom: 15px;
 }
 
-label{
-display:block;
-margin-bottom:6px;
-font-weight:bold;
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
 }
 
-input, select, textarea{
-width:100%;
-padding:8px;
-border:1px solid #ccc;
-border-radius:6px;
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
 
-textarea{
-min-height:90px;
-resize:vertical;
+textarea {
+    min-height: 90px;
+    resize: vertical;
 }
 
-button{
-font-weight:bold;
-padding:10px;
-background-color:#4b5c86;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-transition: 0.2s;
+button {
+    font-weight: bold;
+    padding: 10px;
+    background-color: #4b5c86;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-button:hover{
-background-color:#abc0d6;
-transform: scale(1.1);
+button:hover {
+    background-color: #abc0d6;
+    transform: scale(1.1);
 }
 
-.error{
-color:red;
-margin-top:15px;
-font-weight:bold;
-min-height: 20px;
+.error {
+    color: red;
+    margin-top: 15px;
+    font-weight: bold;
+    min-height: 20px;
 }
 
-.invalid{
-    border:2px solid red;
-    background:#fff0f0;
+.invalid {
+    border: 2px solid red;
+    background: #fff0f0;
 }
 
-.error-text{
-    color:red;
-    font-size:12px;
-    margin-top:4px;
+.error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
     min-height: 14px;
 }
 
-
-table{
-width:100%;
-border-collapse:collapse;
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-thead{
-background:#1e293b;
-color:white;
+thead {
+    background: #1e293b;
+    color: white;
 }
 
-th,td{
-border:1px solid #ddd;
-padding:10px;
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.tabs-menu {
+    display: flex;
+    padding: 0 10px;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #bac7d6; 
+}
+
+.tab {
+    text-decoration: none;
+    color: #7a8ba3; 
+    font-weight: bold;
+    padding: 10px 20px;
+    margin-bottom: -1px; 
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.tab:hover {
+    color: #4b5c86;
+}
+
+.tab.active {
+    color: #4b5c86;
+    border-bottom: 2px solid #4b5c86; 
+}
+
+.tab-panel {
+  display: none !important;
+}
+
+.tab-panel.active {
+  display: block !important; 
 }

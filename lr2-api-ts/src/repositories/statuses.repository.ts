@@ -9,6 +9,7 @@ export async function getById(id: number) {
 }
 
 export async function create(data: any) {
+  console.log("---> ЩО ПРИЙШЛО В РЕПОЗИТОРІЙ:", data);
   const result = await run(`
     INSERT INTO statuses(name)
     VALUES('${data.name}')

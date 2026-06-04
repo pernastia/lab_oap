@@ -1,104 +1,134 @@
 <!doctype html>
 <html lang="uk">
 <head>
- <meta charset="utf-8" />
- <meta name="viewport" content="width=device-width, initial-scale=1" />
- <title>Техпідтримка для студентів</title>
- <link rel="stylesheet" href="styles.css" />
- <script src="app.js" defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Техпідтримка для студентів</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" type="module"></script>
 </head>
 <body>
- <h1>"Tech support request" for students (варіант №9)</h1>
+  <h1>"Tech support request" for students (варіант №9)</h1>
 
-<div class="controls">
-    <input type="text" id="searchInput" placeholder="Search by subject...">
+  <nav class="tabs-menu">
+    <button class="tab-btn active" data-tab="tickets">Tickets</button>
+    <button class="tab-btn" data-tab="users">Users</button>
+  </nav>
 
-    <select id="sortSelect">
+  <div id="tab-tickets" class="tab-panel active">
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search by subject...">
+      <select id="sortSelect">
         <option value="">No sorting</option>
         <option value="priority">Sort by priority</option>
-    </select>
-</div>
+      </select>
+    </div>
 
-<div class="container">
-<div class="form-panel">
-<h2>New ticket</h2>
+    <div class="container">
+      <div class="form-panel">
+        <h2 id="ticketFormTitle">New ticket</h2>
+        <form id="ticketForm">
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject">
+            <div class="error-text" id="subjectError"></div>
+          </div>
 
-<form id="ticketForm">
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status">
+              <option value="">select</option>
+              <option value="1">Open</option>
+              <option value="2">In Progress</option>
+              <option value="3">Closed</option>
+            </select>
+            <div class="error-text" id="statusError"></div>
+          </div>
 
-<div class="form-group">
-<label for="subject">Subject</label>
-<input type="text" id="subject">
-<div class="error-text" id="subjectError"></div>
-</div>
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option value="">select</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+            <div class="error-text" id="priorityError"></div>
+          </div>
 
-<div class="form-group">
-<label for="status">Status</label>
-<select id="status">
-<option value="">select</option>
-<option value="Open">Open</option>
-<option value="In Progress">In Progress</option>
-<option value="Closed">Closed</option>
-</select>
-<div class="error-text" id="statusError"></div>
-</div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message"></textarea>
+            <div class="error-text" id="messageError"></div>
+          </div>
 
-<div class="form-group">
-<label for="priority">Priority</label>
-<select id="priority">
-<option value="">select</option>
-<option>Low</option>
-<option>Medium</option>
-<option>High</option>
-</select>
-<div class="error-text" id="priorityError"></div>
-</div>
+          <div class="form-group">
+            <label for="author">Author</label>
+            <select id="author">
+              <option value="">select</option>
+            </select>
+            <div class="error-text" id="authorError"></div>
+          </div>
 
-<div class="form-group">
-<label for="message">Message</label>
-<textarea id="message"></textarea>
-<div class="error-text" id="messageError"></div>
-</div>
+          <button type="submit" id="ticketSubmitBtn">Send</button>
+          <div id="ticketAlert" class="alert"></div>
+        </form>
+        <div id="ticketLoading" style="display:none">Loading...</div>
+      </div>
 
-<div class="form-group">
-<label for="author">User</label>
-<select id="author">
-<option value="">select</option>
-<option value="Ivan Petrenko">Ivan Petrenko</option>
-<option value="Olena Koval">Olena Koval</option>
-<option value="Pavlo Melnyk">Pavlo Melnyk</option>
-</select>
-<div class="error-text" id="authorError"></div>
-</div>
+      <div class="list-panel">
+        <h2>Ticket list</h2>
+        <table>
+          <thead>
+            <tr>
+              <th data-field="id">ID</th>
+              <th data-field="subject">Subject</th>
+              <th data-field="status">Status</th>
+              <th data-field="priority">Priority</th>
+              <th data-field="author">Author</th>
+              <th data-field="message">Message</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketTable"></tbody>
+        </table>
+        <div id="ticketEmpty" style="display:none">No tickets found</div>
+      </div>
+    </div>
+  </div>
 
-<button type="submit">Send</button>
+  <div id="tab-users" class="tab-panel">
+    <div class="container">
+      <div class="form-panel">
+        <h2 id="userFormTitle">New user</h2>
+        <form id="userForm">
+          <div class="form-group">
+            <label for="userName">User Name</label>
+            <input type="text" id="userName">
+            <div class="error-text" id="userNameError"></div>
+          </div>
+          <button type="submit" id="userSubmitBtn">Add user</button>
+          <div id="userAlert" class="alert"></div>
+        </form>
+        <div id="userLoading" style="display:none">Loading...</div>
+      </div>
 
-<div id="error" class="error"></div>
+      <div class="list-panel">
+        <h2>User list</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTable"></tbody>
+        </table>
+        <div id="userEmpty" style="display:none">No users found</div>
+      </div>
+    </div>
+  </div>
 
-</form>
-<div id="loading" style="display:none">
-Loading...
-</div>
-</div>
-
-<div class="list-panel">
-<h2>Ticket list</h2>
-
-<table>
-<thead>
-<tr>
-<th data-field="id">ID</th>
-<th data-field="subject">Subject</th>
-<th data-field="status">Status</th>
-<th data-field="priority">Priority</th>
-<th data-field="author">Author</th>
-<th data-field="message">Message</th>
-<th>Actions</th>
-</tr>
-</thead>
-
-<tbody id="ticketTable"></tbody>
-</table>
-</div>
-</div>
 </body>
 </html>
