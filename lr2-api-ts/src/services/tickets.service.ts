@@ -17,6 +17,13 @@ export const getTicket = async (id: number) => {
   return await repo.getTicketById(id);
 };
 
+export const getTicketByIdAndOwner = async (
+  id: number,
+  ownerUserId: number,
+) => {
+  return await repo.getTicketByIdAndOwner(id, ownerUserId);
+};
+
 export const createTicket = async (data: CreateTicketRequestDTO) => {
   return await repo.createTicket(data);
 };

@@ -13,9 +13,13 @@ async function request(
 
   try {
     const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
+  ...options,
+  signal: controller.signal,
+  headers: {
+    ...options?.headers,
+    "X-Demo-UserId": "1",
+  },
+});
 
     const data: ApiError | unknown = await response.json().catch(() => null);
 

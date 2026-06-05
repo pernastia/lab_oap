@@ -32,16 +32,26 @@ export async function getTicketById(
 ) {
   try {
     const id = Number(req.params.id);
+    const currentUserId = (req as any).currentUserId as number | undefined;
+
+    if (currentUserId !== undefined) {
+      const owned = await service.getTicketByIdAndOwner(id, currentUserId);
+      if (!owned) {
+        throw new ApiError(
+          404,
+          "NOT_FOUND",
+          "Ticket not found or access denied",
+        );
+      }
+      return res.status(200).json({ data: owned });
+    }
 
     const ticket = await service.getTicket(id);
-
     if (!ticket) {
       throw new ApiError(404, "NOT_FOUND", "Ticket not found");
     }
 
-    res.status(200).json({
-      data: ticket,
-    });
+    res.status(200).json({ data: ticket });
   } catch (error) {
     next(error);
   }
@@ -70,16 +80,24 @@ export async function updateTicket(
   next: NextFunction,
 ) {
   try {
+    const id = Number(req.params.id);
     const dto: UpdateTicketRequestDTO = req.body;
-    const ticket = await service.updateTicket(Number(req.params.id), dto);
-
+    const currentUserId = (req as any).currentUserId as number | undefined;
+    if (currentUserId !== undefined) {
+      const owned = await service.getTicketByIdAndOwner(id, currentUserId);
+      if (!owned) {
+        throw new ApiError(
+          404,
+          "NOT_FOUND",
+          "Ticket not found or access denied",
+        );
+      }
+    }
+    const ticket = await service.updateTicket(id, dto);
     if (!ticket) {
       throw new ApiError(404, "NOT_FOUND", "Ticket not found");
     }
-
-    res.status(200).json({
-      data: ticket,
-    });
+    res.status(200).json({ data: ticket });
   } catch (error) {
     next(error);
   }

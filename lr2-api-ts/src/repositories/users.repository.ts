@@ -5,20 +5,20 @@ export async function getAllUsers() {
 }
 
 export async function getUserById(id: number) {
-  return get(`SELECT * FROM Users WHERE id = ${id}`);
+  return get(`SELECT * FROM Users WHERE id = ?`, [id]);
 }
 
 export async function createUser(dto: { name: string }) {
-  const result = await run(`INSERT INTO Users(name) VALUES('${dto.name}')`);
+  const result = await run(`INSERT INTO Users(name) VALUES(?)`, [dto.name]);
   return getUserById(result.lastID);
 }
 
 export async function updateUser(id: number, dto: { name: string }) {
-  await run(`UPDATE Users SET name = '${dto.name}' WHERE id = ${id}`);
+  await run(`UPDATE Users SET name = ? WHERE id = ?`, [dto.name, id]);
   return getUserById(id);
 }
 
 export async function deleteUser(id: number) {
-  const result = await run(`DELETE FROM Users WHERE id = ${id}`);
+  const result = await run(`DELETE FROM Users WHERE id = ?`, [id]);
   return result.changes > 0;
 }

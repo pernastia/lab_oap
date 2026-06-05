@@ -6,15 +6,26 @@
   <title>Техпідтримка для студентів</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js" type="module"></script>
+  <style>
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
 </head>
 <body>
   <h1>"Tech support request" for students (варіант №9)</h1>
 
+  <div style="padding: 8px 16px;">
+    <label>Current user:</label>
+    <select id="currentUserSelect"></select>
+  </div>
+
   <nav class="tabs-menu">
     <button class="tab-btn active" data-tab="tickets">Tickets</button>
     <button class="tab-btn" data-tab="users">Users</button>
+    <button class="tab-btn" data-tab="stats">Top 3</button>
   </nav>
 
+  <!-- TICKETS -->
   <div id="tab-tickets" class="tab-panel active">
     <div class="controls">
       <input type="text" id="searchInput" placeholder="Search by subject...">
@@ -33,18 +44,13 @@
             <input type="text" id="subject">
             <div class="error-text" id="subjectError"></div>
           </div>
-
           <div class="form-group">
             <label for="status">Status</label>
             <select id="status">
               <option value="">select</option>
-              <option value="1">Open</option>
-              <option value="2">In Progress</option>
-              <option value="3">Closed</option>
             </select>
             <div class="error-text" id="statusError"></div>
           </div>
-
           <div class="form-group">
             <label for="priority">Priority</label>
             <select id="priority">
@@ -55,13 +61,11 @@
             </select>
             <div class="error-text" id="priorityError"></div>
           </div>
-
           <div class="form-group">
             <label for="message">Message</label>
             <textarea id="message"></textarea>
             <div class="error-text" id="messageError"></div>
           </div>
-
           <div class="form-group">
             <label for="author">Author</label>
             <select id="author">
@@ -69,7 +73,6 @@
             </select>
             <div class="error-text" id="authorError"></div>
           </div>
-
           <button type="submit" id="ticketSubmitBtn">Send</button>
           <div id="ticketAlert" class="alert"></div>
         </form>
@@ -97,6 +100,7 @@
     </div>
   </div>
 
+  <!-- USERS -->
   <div id="tab-users" class="tab-panel">
     <div class="container">
       <div class="form-panel">
@@ -112,7 +116,6 @@
         </form>
         <div id="userLoading" style="display:none">Loading...</div>
       </div>
-
       <div class="list-panel">
         <h2>User list</h2>
         <table>
@@ -126,6 +129,25 @@
           <tbody id="userTable"></tbody>
         </table>
         <div id="userEmpty" style="display:none">No users found</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP 3 -->
+  <div id="tab-stats" class="tab-panel">
+    <div class="container">
+      <div class="list-panel">
+        <h2>Top 3 tickets by messages</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Messages</th>
+              <th>Top User</th>
+            </tr>
+          </thead>
+          <tbody id="topTable"></tbody>
+        </table>
       </div>
     </div>
   </div>

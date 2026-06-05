@@ -7,12 +7,14 @@ export default function errorHandler(
   res: Response,
   _next: NextFunction,
 ) {
+  const isDev = process.env.NODE_ENV !== "production";
+
   if (err instanceof ApiError) {
     return res.status(err.status).json({
       error: {
         code: err.code,
         message: err.message,
-        details: err.details || [],
+        ...(isDev && err.details ? { details: err.details } : {}),
       },
     });
   }
@@ -23,12 +25,12 @@ export default function errorHandler(
       error: {
         code: apiErr.code || "ERROR",
         message: apiErr.message || "Unknown error",
-        details: apiErr.details || null,
       },
     });
   }
 
   console.error("Unhandled error:", err);
+
   return res.status(500).json({
     error: {
       code: "INTERNAL_ERROR",
